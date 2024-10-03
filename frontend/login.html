@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log-in</title>
+    <link rel="stylesheet" href="geral.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div style="display:none; background-color: #eee" id="informacoes"></div>
+    <header>
+        <a href="index.html"><img src="assets/logo.png" alt="logo"></a>
+    </header>
+    <main>
+        <div class="cadastrar">
+            <input type="text" id="name_cadastro" placeholder="Nome">
+            <input type="text" id="email_cadastro" placeholder="Email">
+            <input type="text" id="password_cadastro" placeholder="Senha">
+            <button onclick="cadastrar(event)">Cadastrar</button>
+        </div>
+        <div class="login">
+            <input type="text" id="email_login" placeholder="Email">
+            <input type="text" id="password_login" placeholder="Senha">
+            <button onclick="login(event)">Log-In</button>
+            <button onclick="logout(event)">Log-Out</button>
+        </div>
+    </main>
+    <script src="./script.js"></script>
+</body>
+</html>

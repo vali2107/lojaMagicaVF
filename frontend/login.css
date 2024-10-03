@@ -1,0 +1,37 @@
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:90vh;
+    gap:7vw;
+}
+
+main div {
+    display: flex;
+    flex-direction: column;
+    width:40vw;
+    background-color: rgb(124, 207, 210);
+    padding:20px;
+    gap:3vh;
+} 
+
+main div input {
+    height: 5vh;
+    border-radius: 10px;
+    border:none;
+    padding:5px;
+}
+
+main div button {
+    height:7vh;
+    border-radius: 50px;
+    margin-top:3vh;
+    border:none;
+    padding:5px;
+    background-color: cadetblue;
+    color:white;
+}
+
+main div button:hover {
+    background-color: rgb(66, 111, 113);
+}
