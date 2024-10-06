@@ -1,0 +1,40 @@
+main {
+    display: flex;
+    gap:2vw;
+    margin:7vw;
+    justify-content: center;
+}
+.endereco, .pagamento, .concluir {
+    width:20vw;
+    background-color: rgb(124, 207, 210);
+    padding:20px;
+}
+main div form {
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    margin-top: 20px;
+}
+
+.concluir {
+    display: flex;
+    flex-direction: column;
+    gap:5vh;
+}
+.concluir div {
+    display: flex;
+    justify-content: space-between;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.total p {
+    font-weight: bold;
+}
+
+#finalizarCompra {
+    background-color: rgb(255, 255, 255);
+    padding:10px;
+    border:none;
+    border-radius: 50px;
+}

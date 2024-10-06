@@ -197,14 +197,14 @@ app.post('/produto/cadastrar', upload.single('file'), (req, res) => {
     })
 });
 // Listar produtos
-app.use('/uploads', express.static(__dirname + '\\public'))
+app.use('/uploads', express.static(__dirname + '/public'))
 app.get('/produto/listar', (req, res) => {
     const query = "SELECT * FROM produtos";
 
-    connection.query(query,params, (err, results) => {
+    connection.query(query, (err, results) => {
         if(results) {
             res
-                .status(201)
+                .status(200)
                 .json({
                     success: true,
                     message: "Sucesso",
@@ -279,10 +279,10 @@ app.delete('/produto/delete/:id', (req, res) => {
 
 // Definir portas de carrinho
 // Adicionar no carrinho
-app.post('/usuario/:usuario/carrinho', (req, res) => {
+app.post('/usuario/carrinho', (req, res) => {
     let params = Array(
-        req.params.usuario,
-        req.body.produto,
+        req.body.idUsuario,
+        req.body.idProduto,
         req.body.quantidade
     );
 
@@ -307,11 +307,48 @@ app.post('/usuario/:usuario/carrinho', (req, res) => {
         }
     })
 });
-// Tirar do carrinho
-app.delete('/usuario/:usuario/carrinho/deletar', (req, res) => {
+// Listar carrinho
+app.get('/carrinho/listar/:idUsuario', (req, res) => {
     let params = Array(
-        req.params.usuario,
-        req.body.produto
+        req.params.idUsuario
+    )
+    const query = `
+        SELECT 
+            produtos.id AS idProduto, 
+            produtos.nome, 
+            produtos.descricao, 
+            produtos.valor, 
+            produtos.src, 
+            carrinho.quantidade 
+        FROM carrinho 
+        JOIN produtos ON carrinho.produto = produtos.id 
+        WHERE carrinho.usuario = ?;`;
+
+    connection.query(query, params[0], (err, results) => {
+        if(results) {
+            res
+                .status(200)
+                .json({
+                    success: true,
+                    message: "Sucesso",
+                    data: results
+                })
+        } else {
+            res
+                .status(400)
+                .json({
+                    success: false,
+                    message: "Sem Sucesso",
+                    data: err
+                })
+        }
+    })
+});
+// Tirar do carrinho
+app.delete('/usuario/carrinho/deletar', (req, res) => {
+    let params = Array(
+        req.body.idUsuario,
+        req.body.idProduto
     )
     let query = "DELETE FROM carrinho WHERE usuario = ? AND produto = ?";
 

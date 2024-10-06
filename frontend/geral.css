@@ -21,7 +21,7 @@ header a img {
 .navBar {
     display: flex;
     justify-content: space-between;
-    width: 10vw;
+    gap:20px;
 }
 
 .navBar a {

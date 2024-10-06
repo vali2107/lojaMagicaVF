@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="geral.css">
+    <script src="https://kit.fontawesome.com/afdb87810b.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <a href="index.html"><img src="assets/logo.png" alt="logo"></a>
+        <div class="navBar">
+            <a href="catalogo.html">Catálogo</a>
+            <a href="carrinho.html">Carrinho</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="endereco">
+            <h3>ENDEREÇO</h3>
+            <form action="" id="formEndereco">
+                <label for="cep">CEP</label>
+                <input type="number" id="cep" name="cep">
+                <label for="rua">Rua</label>
+                <input type="text" id="rua" name="rua">
+                <label for="bairro">Bairro</label>
+                <input type="text" id="bairro" name="bairro">
+                <label for="cidade">Cidade</label>
+                <input type="text" id="cidade" name="cidade">
+                <label for="estado">Estado</label>
+                <input type="text" id="estado" name="estado">
+            </form>
+        </div>
+
+        <div class="pagamento">
+            <h3>PAGAMENTO</h3>
+            <p>Deve ser no cartão de crédito</p>
+            <form action="" id="formPagamento">
+                <label for="numero">Número do cartão</label>
+                <input type="number" id="numero" name="numero" required>
+                <label for="nomeCartao">Nome no cartão</label>
+                <input type="text" id="nomeCartao" name="nomeCartao" required>
+                <label for="validade">Validade</label>
+                <input type="date" id="validade" name="validade">
+                <label for="seguranaa">Código de segurança</label>
+                <input type="number" id="seguranca" name="seguranca">
+            </form>
+        </div>
+        
+        <div class="concluir">
+            <h3>CONCLUIR PEDIDO</h3>
+            <div class="total">
+                <p>TOTAL</p>
+                <p id="precoTotal"></p>
+            </div>
+            <button id="finalizarCompra">Finalizar Compra</button>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

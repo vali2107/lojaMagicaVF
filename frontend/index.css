@@ -21,14 +21,13 @@ main p {
     width:45vw;
 }
 
-main img {
-    width:50vw;
-}
+
 
 .navBar {
     display: flex;
     align-items: center;
     gap:10px;
+    width:25vw;
 }
 
 #login {

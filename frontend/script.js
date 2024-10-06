@@ -61,17 +61,18 @@ function logout() {
     window.location.href = "login.html"
 }
 
-
-window.addEventListener("load", () => {
-    if (localStorage.getItem("informacoes")) {
-        let html = document.getElementById('informacoes')
-        let dados = JSON.parse(localStorage.getItem('informacoes'))
-        
-        dados.perfil === "Admin"
-            ? document.getElementById("inserirProduto").style.display = "block"
-            : document.getElementById("inserirProduto").style.display = "none"
-    }
-})
+if (document.getElementById('catalogo')) {
+    window.addEventListener("load", () => {
+        if (localStorage.getItem("informacoes")) {
+            let html = document.getElementById('informacoes')
+            let dados = JSON.parse(localStorage.getItem('informacoes'))
+            
+            dados.perfil === "Admin"
+                ? document.getElementById("inserirProduto").style.display = "block"
+                : document.getElementById("inserirProduto").style.display = "none"
+        }
+    })
+}
 
 
 async function inserirProduto(event) {
@@ -82,15 +83,7 @@ async function inserirProduto(event) {
     const valor = Number(document.getElementById("valor_produto").value)
     const file = document.getElementById("file").files[0]
 
-    console.log(nome);
-    console.log(descricao);
-    console.log(valor);
-    console.log(file);
-    console.log(document.getElementById("file"));
-    console.log(document.getElementById("file").files[0]);
-
     let formData = new FormData();
-
 
     formData.append("nome", nome)
     formData.append("descricao", descricao)
@@ -129,11 +122,11 @@ async function listarProdutos() {
         let html = document.getElementById('catalogo')
         productData.forEach(product => {
             let card = `<div class="item">
-                <img src="${images + product.image}" alt="${product.nome}">
+                <img src="${images + product.src}" alt="${product.nome}">
                 <p class="nome">${product.nome}</p>
                 <p class="descricao">${product.descricao}</p>
-                <p class="preco">${product.valor}</p>
-                <i class="fa-solid fa-cart-shopping carrinho" id="nuvem1"></i>
+                <p class="preco">R$${product.valor}</p>
+                <i class="fa-solid fa-cart-shopping carrinho" onclick="adicionarCarrinho(${product.id})"></i>
             </div>
             `;
             html.innerHTML += card;
@@ -141,4 +134,112 @@ async function listarProdutos() {
     } else {
         alert(results.message)
     }
+}
+if (document.getElementById('catalogo')) {
+    document.addEventListener('DOMContentLoaded', listarProdutos)
+}
+
+async function adicionarCarrinho(idProduto) {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id;
+    const quantidade = 1
+
+    const data = {idProduto, idUsuario, quantidade}
+
+    const response = await fetch('http://localhost:3006/usuario/carrinho', {
+        method: 'POST',
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        alert(results.message)
+    } else {
+        alert(results.message)
+    }
+
+}
+
+
+async function listarCarrinho() {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id; 
+
+    const response = await fetch(`http://localhost:3006/carrinho/listar/${idUsuario}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type":"application/json"
+        },
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        let productData = results.data
+        const images = 'http://localhost:3006/uploads/'  
+        let html = document.getElementById('carrinho')
+        html.innerHTML = '';
+        function atualizarTotal() {
+            let total = 0;
+            productData.forEach(product => {
+                const quantidade = document.getElementById(`quantidade`).value;
+                total += product.valor * quantidade;
+            });
+            const textoTotal = document.getElementById('total');
+            textoTotal.textContent = "R$ " + total;
+        }
+        productData.forEach(product => {
+            let card = `
+            <div class="item">
+                <img src="${images + product.src}" alt="${product.nome}">
+                <p class="nome">${product.nome}</p>
+                <input type="number" id="quantidade" value="1" min="1">
+                <p class="preco">R$${product.valor}</p>
+                <i class="fa-solid fa-trash" onclick="removerCarrinho(${product.idProduto})"></i>
+            </div>`;
+            html.innerHTML += card;
+            console.log(product.id)
+            const inputQuantidade = document.getElementById(`quantidade`);
+            inputQuantidade.addEventListener('input', atualizarTotal); 
+        })     
+        atualizarTotal();
+        
+    } else {
+        alert(results.message)
+    }
+}
+
+
+async function removerCarrinho(idProduto) {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id; 
+
+    const data = {idUsuario, idProduto}
+    
+    const response = await fetch(`http://localhost:3006/usuario/carrinho/deletar`, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        alert(results.message)
+        listarCarrinho()
+    } else {
+        alert(results.message)
+    }
+}
+if (document.getElementById('carrinho')) {
+    document.addEventListener('DOMContentLoaded', listarCarrinho)
 }
