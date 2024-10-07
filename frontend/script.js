@@ -126,6 +126,7 @@ async function listarProdutos() {
                 <p class="nome">${product.nome}</p>
                 <p class="descricao">${product.descricao}</p>
                 <p class="preco">R$${product.valor}</p>
+                <i class="fa-regular fa-heart" onclick="adicionarFavoritos(${product.id})"></i>
                 <i class="fa-solid fa-cart-shopping carrinho" onclick="adicionarCarrinho(${product.id})"></i>
             </div>
             `;
@@ -242,4 +243,60 @@ async function removerCarrinho(idProduto) {
 }
 if (document.getElementById('carrinho')) {
     document.addEventListener('DOMContentLoaded', listarCarrinho)
+}
+
+
+async function adicionarFavoritos(idProduto) {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id;
+
+    const data = {idUsuario, idProduto}
+
+    const response = await fetch('http://localhost:3006/favoritos/adicionar', {
+        method: 'POST',
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        alert(results.message)
+        document.getElementById(`favorito`).classList.remove('fa-regular');
+        document.getElementById(`favorito`).classList.add('fa-solid');
+        document.getElementById(`favorito`).onclick = () => removerFavorito(idProduto);
+    } else {
+        alert(results.message)
+    }
+}
+
+async function removerFavoritos(idProduto) {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id;
+
+    const data = {idUsuario, idProduto}
+
+    const response = await fetch('http://localhost:3006/favoritos/deletar', {
+        method: 'DELETE',
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        alert(results.message)
+        document.getElementById(`favorito`).classList.remove('fa-solid');
+        document.getElementById(`favorito`).classList.add('fa-regular');
+        document.getElementById(`favorito`).onclick = () => adicionarFavoritos(idProduto);
+    } else {
+        alert(results.message)
+    }
+
 }

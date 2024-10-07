@@ -375,10 +375,10 @@ app.delete('/usuario/carrinho/deletar', (req, res) => {
 
 // Definir portas de favoritos
 // Adicionar favoritos
-app.post('/usuario/:usuario/favorito', (req, res) => {
+app.post('/favoritos/adicionar', (req, res) => {
     let params = Array(
-        req.params.usuario,
-        req.body.produto,
+        req.body.idUsuario,
+        req.body.idProduto,
     );
 
     let query = "INSERT INTO favoritos(usuario, produto) VALUES(?,?);";
@@ -403,10 +403,10 @@ app.post('/usuario/:usuario/favorito', (req, res) => {
     })
 });
 // Tirar favoritos
-app.delete('/usuario/:usuario/favoritos/deletar', (req, res) => {
+app.delete('/favoritos/deletar', (req, res) => {
     let params = Array(
-        req.params.usuario,
-        req.body.produto
+        req.body.idUsuario,
+        req.body.idProduto
     )
     let query = "DELETE FROM favoritos WHERE usuario = ? AND produto = ?";
 
@@ -419,13 +419,59 @@ app.delete('/usuario/:usuario/favoritos/deletar', (req, res) => {
                     message: "Sucesso",
                     data: results
                 })
-        } else {
+        } else if (err) {
             res
                 .status(400)
                 .json({
                     success: false,
                     message: "Sem Sucesso",
                     data: err
+                })
+        } else {
+            res
+                .status(404)
+                .json({
+                    sucess: false,
+                    message: "Produto não encontrado nos favoritos",
+                    data:results
+                })
+
+        }
+    })
+});
+// Verificar se está nos favoritos
+app.get('/favoritos/verificar/:idUsuario/:idProduto', (req, res) => {
+    let params = Array(
+        req.params.idUsuario,
+        req.params.idProduto
+    )
+    const query = `
+        SELECT * FROM favoritos WHERE usuario = ? AND produto = ?;`;
+
+    connection.query(query, params, (err, results) => {
+        if(results.length > 0) {
+            res
+                .status(200)
+                .json({
+                    success: true,
+                    message: "Sucesso",
+                    favoritado: true,
+                })
+        } else if (err) {
+            res
+                .status(400)
+                .json({
+                    success: false,
+                    message: "Sem Sucesso",
+                    data: err
+                })
+        } else {
+            res
+                .status(200)
+                .json({
+                    success: true,
+                    message: "Sem Sucesso",
+                    favoritado: false
                 })
         }
     })
