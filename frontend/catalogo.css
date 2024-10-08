@@ -6,7 +6,7 @@ main {
     justify-content: center;
 }
 
-#inserirProduto {
+#inserirProduto, #editarProduto {
     display: flex;
     flex-direction: column;
     width:40vw;
@@ -16,14 +16,14 @@ main {
     margin-top:2vw;
 }
 
-#inserirProduto input {
+#inserirProduto input, #editarProduto input {
     height: 5vh;
     border-radius: 10px;
     border:none;
     padding:5px;
 }
 
-#inserirProduto button {
+#inserirProduto button, #editarProduto button {
     height:7vh;
     border-radius: 50px;
     margin-top:3vh;
@@ -33,7 +33,7 @@ main {
     color:white;
 }
 
-#inserirProduto button:hover {
+#inserirProduto button:hover, #editarProduto button:hover {
     background-color: rgb(66, 111, 113);
 }
 
@@ -51,11 +51,12 @@ main {
 /* itens em si e seus elementos */
 .item {
     display:grid;
-    grid-template-columns: 90% 10%;
-    grid-template-areas: "imagem imagem" 
-                        "nome nome" 
-                        "descricao descricao"
-                        "preco carrinho" ;
+    grid-template-columns: 80% 10% 10%;
+    grid-template-areas: "imagem imagem imagem" 
+                        "nome nome nome" 
+                        "descricao descricao descricao"
+                        "preco favorito carrinho"
+                        "editar editar editar" ;
 }
 
 .item img {
@@ -79,4 +80,19 @@ main {
 .carrinho {
     grid-area: carrinho;
     font-size: 18px
+}
+.favorito {
+    grid-area: favorito;
+    font-size:18px
+}
+
+.editarProduto {
+    grid-area: editar;
+    background-color: cadetblue;
+    padding:7px;
+    border-radius: 50px;
+    border:none;
+    color:black;
+    height:40px;
+    text-align: center;
 }

@@ -106,6 +106,22 @@ async function inserirProduto(event) {
     }
 }
 
+async function verificarFavorito(idProduto) {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id;
+
+    const response = await fetch(`http://localhost:3006/favoritos/verificar/${idUsuario}/${idProduto}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    const results = await response.json();
+    return results.favoritado;
+}
+
 async function listarProdutos() {
     const response = await fetch('http://localhost:3006/produto/listar', {
         method: 'GET',
@@ -117,21 +133,45 @@ async function listarProdutos() {
     const results = await response.json();
 
     if(results.success) {
+        const informacoesUsuario = localStorage.getItem('informacoes');
+        const usuario = JSON.parse(informacoesUsuario); 
+        const idUsuario = usuario.id;
         let productData = results.data
         const images = 'http://localhost:3006/uploads/'  
         let html = document.getElementById('catalogo')
-        productData.forEach(product => {
-            let card = `<div class="item">
-                <img src="${images + product.src}" alt="${product.nome}">
-                <p class="nome">${product.nome}</p>
-                <p class="descricao">${product.descricao}</p>
-                <p class="preco">R$${product.valor}</p>
-                <i class="fa-regular fa-heart" onclick="adicionarFavoritos(${product.id})"></i>
-                <i class="fa-solid fa-cart-shopping carrinho" onclick="adicionarCarrinho(${product.id})"></i>
-            </div>
+        html.innerHTML = '';
+        for (const product of productData) {
+            const responseFavoritado = await fetch(`http://localhost:3006/favoritos/verificar/${idUsuario}/${product.id}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const resultsFavoritado = await responseFavoritado.json();
+            const favoritado = resultsFavoritado.favoritado;
+            let icone = favoritado ? "fa-solid fa-heart" : "fa-regular fa-heart";
+            let onclickAction = favoritado ? `removerFavoritos(${product.id})` : `adicionarFavoritos(${product.id})`;
+
+            const perfil = usuario.perfil;
+            let displayEditar = "none";
+            if (usuario.perfil === "Admin") {
+                displayEditar = "block"
+            }
+
+            let card = `
+                <div class="item" id="card_${product.id}">
+                    <img src="${images + product.src}" alt="${product.nome}">
+                    <p class="nome">${product.nome}</p>
+                    <p class="descricao">${product.descricao}</p>
+                    <p class="preco">R$${product.valor}</p>
+                    <i class="${icone} favorito" id="favorito_${product.id}" onclick="${onclickAction}"></i>
+                    <i class="fa-solid fa-cart-shopping carrinho" onclick="adicionarCarrinho(${product.id})"></i>
+                    <button onclick="editarProduto(${product.id}, '${product.nome}', '${product.descricao}', ${product.valor})" style="display:${displayEditar}" id="editarProduto_${product.id}" class="editarProduto">Editar</button>
+                </div>
             `;
+
             html.innerHTML += card;
-        })      
+        }
     } else {
         alert(results.message)
     }
@@ -165,7 +205,6 @@ async function adicionarCarrinho(idProduto) {
     }
 
 }
-
 
 async function listarCarrinho() {
     const informacoesUsuario = localStorage.getItem('informacoes');
@@ -216,7 +255,6 @@ async function listarCarrinho() {
     }
 }
 
-
 async function removerCarrinho(idProduto) {
     const informacoesUsuario = localStorage.getItem('informacoes');
     const usuario = JSON.parse(informacoesUsuario); 
@@ -265,9 +303,46 @@ async function adicionarFavoritos(idProduto) {
 
     if(results.success) {
         alert(results.message)
-        document.getElementById(`favorito`).classList.remove('fa-regular');
-        document.getElementById(`favorito`).classList.add('fa-solid');
-        document.getElementById(`favorito`).onclick = () => removerFavorito(idProduto);
+        const favoritoIcon = document.getElementById(`favorito_${idProduto}`);
+        favoritoIcon.classList.remove('fa-regular');
+        favoritoIcon.classList.add('fa-solid');
+        favoritoIcon.onclick = () => removerFavoritos(idProduto);
+        listarFavoritos()
+    } else {
+        alert(results.message)
+    }
+}
+
+async function listarFavoritos() {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+    const idUsuario = usuario.id; 
+
+    const response = await fetch(`http://localhost:3006/favoritos/listar/${idUsuario}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type":"application/json"
+        },
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        let productData = results.data
+        const images = 'http://localhost:3006/uploads/'  
+        let html = document.getElementById('favoritos')
+        html.innerHTML = '';
+        productData.forEach(product => {
+            let card = `
+            <div class="item">
+                <img src="${images + product.src}" alt="${product.nome}">
+                <p class="nome">${product.nome}</p>
+                <p class="preco">R$${product.valor}</p>
+                <i class="fa-solid fa-heart" onclick="removerFavoritos(${product.idProduto})"></i>
+            </div>`;
+            html.innerHTML += card;
+        })     
+        
     } else {
         alert(results.message)
     }
@@ -292,11 +367,145 @@ async function removerFavoritos(idProduto) {
 
     if(results.success) {
         alert(results.message)
-        document.getElementById(`favorito`).classList.remove('fa-solid');
-        document.getElementById(`favorito`).classList.add('fa-regular');
-        document.getElementById(`favorito`).onclick = () => adicionarFavoritos(idProduto);
+        const favoritoIcon = document.getElementById(`favorito_${idProduto}`);
+        favoritoIcon.classList.remove('fa-solid');
+        favoritoIcon.classList.add('fa-regular');
+        favoritoIcon.onclick = () => adicionarFavoritos(idProduto);
+
+        listarFavoritos()
+
     } else {
         alert(results.message)
     }
+}
 
+if (document.getElementById('favoritos')) {
+    document.addEventListener('DOMContentLoaded', listarFavoritos)
+}
+
+
+async function editarProduto(idProduto, nomeProduto, descricaoProduto, valorProduto) {
+    document.getElementById("nome_produto_editar").value = nomeProduto
+    document.getElementById("descricao_produto_editar").value = descricaoProduto
+    document.getElementById("valor_produto_editar").value = valorProduto
+    document.getElementById("editarProduto").style.display = "block"
+    document.getElementById("botao_editar").onclick = () => enviarEdicaoProduto(idProduto)
+    document.getElementById("botao_deletar").onclick = () => removerProduto(idProduto)
+}
+
+async function enviarEdicaoProduto(idProduto) {
+    const nome = document.getElementById("nome_produto_editar").value
+    const descricao = document.getElementById("descricao_produto_editar").value
+    const valor = Number(document.getElementById("valor_produto_editar").value)
+    const file = document.getElementById("file_editar").files[0]
+
+    let formData = new FormData();
+
+    formData.append("id", idProduto)
+    formData.append("nome", nome)
+    formData.append("descricao", descricao)
+    formData.append("valor", valor)
+    if (file) {
+        formData.append("file", file);
+    }
+
+    console.log(formData)
+
+    const response = await fetch('http://localhost:3006/produto/editar', {
+        method: 'PUT',
+        body: formData
+    })
+
+    const results = await response.json();
+
+    if(results.success) {        
+        alert(results.message)
+        listarProdutos()
+        document.getElementById("editarProduto").style.display = "none"
+    } else {
+        alert(results.message)
+    }
+}
+
+async function removerProduto(idProduto) {
+    const response = await fetch(`http://localhost:3006/produto/delete/${idProduto}`, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type":"application/json"
+        },
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        alert(results.message)
+        listarProdutos()
+    } else {
+        alert(results.message)
+    }
+}
+
+async function editarUsuario(event) {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario); 
+
+    document.getElementById("name_usuario_editar").value = usuario.name
+    document.getElementById("email_usuario_editar").value = usuario.email
+    document.getElementById("password_usuario_editar").value = usuario.password
+    document.getElementById("botao_editar_usuario").onclick = () => enviarEdicaoUsuario(usuario.id)
+    document.getElementById("botao_deletar_deletar").onclick = () => removerUsuario(usuario.id) 
+}
+
+async function editarUsuario() {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario);
+
+    const nome = document.getElementById("name_usuario_editar").value
+    const email = document.getElementById("email_usuario_editar").value
+    const senha = document.getElementById("password_usuario_editar").value
+
+    const data = {
+        id: usuario.id,
+        nome: nome, 
+        email: email, 
+        senha: senha
+    };
+
+    const response = await fetch('http://localhost:3006/usuario/editar', {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    const results = await response.json();
+
+    if(results.success) {        
+        alert(results.message)
+        window.location.href = "catalogo.html"
+    } else {
+        alert(results.message)
+    }
+}
+
+async function deletarUsuario() {
+    const informacoesUsuario = localStorage.getItem('informacoes');
+    const usuario = JSON.parse(informacoesUsuario);
+
+    const response = await fetch(`http://localhost:3006/usuario/delete/${usuario.id}`, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type":"application/json"
+        },
+    })
+
+    const results = await response.json();
+
+    if(results.success) {
+        alert(results.message)
+        window.location.href = "login.html"
+    } else {
+        alert(results.message)
+    }
 }

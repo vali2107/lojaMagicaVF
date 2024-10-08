@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log-in</title>
+    <link rel="stylesheet" href="geral.css">
+    <link rel="stylesheet" href="perfil.css">
+</head>
+<body>
+    <header>
+        <a href="catalogo.html"><img src="assets/logo.png" alt="logo"></a>
+        <div class="navBar">
+            <a href="catalogo.html">Catalogo</a>
+            <a href="favoritos.html">Favoritos</a>
+            <a href="carrinho.html">Carrinho</a>
+        </div>
+    </header>
+    <main>
+        <div class="editarPerfil">
+            <p>Edite suas informações</p>
+            <p>Se não deseja alterar algum dos campos, deixe-o em branco</p>
+            <input type="text" id="name_usuario_editar" placeholder="Novo nome">
+            <input type="text" id="email_usuario_editar" placeholder="Novo email">
+            <input type="text" id="password_usuario_editar" placeholder="Nova senha">
+            <button onclick="editarUsuario()" id="botao_editar_usuario">Editar</button>
+            <button onclick="logout(event)">Log-Out</button>
+            <button onclick="deletarUsuario()" id="botao_deletar_usuario">Deletar conta</button>
+        </div>
+    </main>
+    <script src="./script.js"></script>
+</body>
+</html>

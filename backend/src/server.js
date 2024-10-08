@@ -110,17 +110,19 @@ app.get('/usuario/listar', (req, res) => {
     })
 });
 
-app.put('/usuario/editar/:id', (req, res) => {
+app.put('/usuario/editar', (req, res) => {
     let params = Array(
-        req.body.name,
-        req.params.id
+        req.body.nome || undefined,
+        req.body.email || undefined,
+        req.body.senha || undefined,
+        req.body.id
     )
-    let query = "UPDATE users SET name = ? WHERE id = ?";
+    let query = "UPDATE users SET name = COALESCE(?, name), email = COALESCE(?, email), password = COALESCE(?, password) WHERE id = ?";
 
     connection.query(query,params, (err, results) => {
         if(results) {
             res
-                .status(201)
+                .status(200)
                 .json({
                     success: true,
                     message: "Sucesso",
@@ -147,7 +149,7 @@ app.delete('/usuario/delete/:id', (req, res) => {
     connection.query(query,params, (err, results) => {
         if(results) {
             res
-                .status(201)
+                .status(200)
                 .json({
                     success: true,
                     message: "Sucesso",
@@ -222,17 +224,20 @@ app.get('/produto/listar', (req, res) => {
     })
 });
 // Editar produto
-app.put('/produto/editar/:id', (req, res) => {
+app.put('/produto/editar',upload.single('file'), (req, res) => {
     let params = Array(
+        req.body.nome,
+        req.body.descricao,
         req.body.valor,
-        req.params.id
+        req.file ? req.file.filename : undefined,
+        req.body.id
     )
-    let query = "UPDATE produtos SET valor = ? WHERE id = ?";
+    let query = "UPDATE produtos SET nome=?,descricao=?, valor=?, src=COALESCE(?, src) WHERE id = ?";
 
     connection.query(query,params, (err, results) => {
         if(results) {
             res
-                .status(201)
+                .status(200)
                 .json({
                     success: true,
                     message: "Sucesso",
@@ -250,16 +255,16 @@ app.put('/produto/editar/:id', (req, res) => {
     })
 });
 // Deletar produto
-app.delete('/produto/delete/:id', (req, res) => {
+app.delete('/produto/delete/:idProduto', (req, res) => {
     let params = Array(
-        req.params.id
+        req.params.idProduto
     )
     let query = "DELETE FROM produtos WHERE id = ?";
 
     connection.query(query,params, (err, results) => {
         if(results) {
             res
-                .status(201)
+                .status(200)
                 .json({
                     success: true,
                     message: "Sucesso",
@@ -470,8 +475,43 @@ app.get('/favoritos/verificar/:idUsuario/:idProduto', (req, res) => {
                 .status(200)
                 .json({
                     success: true,
-                    message: "Sem Sucesso",
+                    message: "Não favoritado",
                     favoritado: false
+                })
+        }
+    })
+});
+app.get('/favoritos/listar/:idUsuario', (req, res) => {
+    let params = Array(
+        req.params.idUsuario
+    )
+    const query = `
+        SELECT 
+            produtos.id AS idProduto, 
+            produtos.nome, 
+            produtos.descricao, 
+            produtos.valor, 
+            produtos.src
+        FROM favoritos 
+        JOIN produtos ON favoritos.produto = produtos.id 
+        WHERE favoritos.usuario = ?;`;
+
+    connection.query(query, params[0], (err, results) => {
+        if(results) {
+            res
+                .status(200)
+                .json({
+                    success: true,
+                    message: "Sucesso",
+                    data: results
+                })
+        } else {
+            res
+                .status(400)
+                .json({
+                    success: false,
+                    message: "Sem Sucesso",
+                    data: err
                 })
         }
     })

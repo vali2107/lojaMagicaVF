@@ -14,7 +14,7 @@
         <div class="navBar">
             <a href="favoritos.html">Favoritos</a>
             <a href="carrinho.html">Carrinho</a>
-            <a onclick="logout(event)">Log-Out</a>
+            <a href="perfil.html">Perfil</a>
         </div>
     </header>
     <main>
@@ -25,9 +25,18 @@
             <input type="file" id="file">
             <button onclick="inserirProduto(event)">Inserir</button>
         </div>
+        <div id="editarProduto" style="display: none;">
+            <input type="text" id="nome_produto_editar" placeholder="Nome">
+            <input type="text" id="descricao_produto_editar" placeholder="Descrição">
+            <input type="text" id="valor_produto_editar" placeholder="Valor">
+            <input type="file" id="file_editar">
+            <button onclick="" id="botao_editar">Editar</button>
+            <button onclick="" id="botao_deletar">Deletar</button>
+        </div>
         <div id="catalogo">
         </div>
     </main>
+    
     <script src="./script.js"></script>
 </body>
 </html>
