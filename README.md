@@ -1,4 +1,4 @@
-# lojaMagica
+# Loja Mágica
 Grupo: Valentina, Lara e Pedro Costa
 Turma 2AM
 
