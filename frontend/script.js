@@ -440,6 +440,7 @@ async function removerProduto(idProduto) {
     if(results.success) {
         alert(results.message)
         listarProdutos()
+        document.getElementById("editarProduto").style.display = "none"
     } else {
         alert(results.message)
     }
