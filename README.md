@@ -1,14 +1,16 @@
 # lojaMagica
 Grupo: Valentina, Lara e Pedro Costa
 Turma 2AM
+
+## Documentação
+### Funcionalidades
+1. Usuário: cadastro, log-in, editar usuário (nome, email e senha), log-out e deletar conta
+2. Produtos: adicionar (somente admin), editar (somente admin), deletar (somente admin) e ver todos os produtos
+3. Carrinho: adicionar no carrinho, ver carrinho, editar carrinho (mudar quantidade), tirar do carrinho
+4. Favoritos: adicionar nos favoritos, retirar dos favoritos, ver favoritos
  
-As informações necessárias estão nos seguintes arquivos:
-1. Banco de dados = backend/lojaMagicaBD
-2. API e server = backend/server.js
-
-
-Pacotes Node utilizados: cors, dotenv, express, mysql2, nodemon
-
+## Coleção Thunder Client
+Pacotes Node utilizados: cors, dotenv, express, mysql2, nodemon, multer
 
 As explicações sobre cada rota está nos comentários do server.js. Segue abaixo exemplos de como utilizar as APIs.
 
