@@ -1,15 +1,18 @@
 // Importar pacotes para a aplicação
 const express = require('express');
 const cors = require('cors');
-
+const setupSwagger = require('./swagger'); // Importa a função de configuração do Swagger
 
 // Definir a porta do express e instanciar o express
 const port = 3006;
 const app = express();
 
+
 // Habilita o cors e json
 app.use(express.json());
 app.use(cors());
+
+setupSwagger(app); // Configura o Swagger no Express
 
 // Testar servidor
 app.listen(port, () => console.log(`Rodando na porta ${port}`));
